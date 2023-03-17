@@ -12,7 +12,9 @@ function useLaunches(onSuccessSound, onAbortSound, onFailureSound) {
 
   const getLaunches = useCallback(async () => {
     const fetchedLaunches = await httpGetLaunches();
-    saveLaunches(fetchedLaunches);
+    saveLaunches(fetchedLaunches.sort((a, b) => {
+      return a.flightNumber - b.flightNumber;
+    }));
   }, []);
 
   useEffect(() => {
