@@ -1,6 +1,5 @@
-const planets = [
+const planets = require('./planet.mongoose');
 
-];
 
 
 function loadPlanetsData() {
@@ -23,9 +22,15 @@ function loadPlanetsData() {
                 comment: '#',
                 columns: true
             }))
-            .on('data', (data) => {
+            .on('data', async (data) => {
                 if (isHabitablePlanet(data)) {
-                    planets.push(data);
+                    await planets.updateOne({
+                        kepler_name : data.kepler_name
+                    }, {
+                        kepler_name : data.kepler_name
+                    }, {
+                        upsert : true
+                    });
                 }
                 // console.log(data)
             }).on('end', () => {
@@ -38,6 +43,7 @@ function loadPlanetsData() {
     
 
 }
+
 
 module.exports = {
     loadPlanetsData,

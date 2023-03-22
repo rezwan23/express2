@@ -1,9 +1,9 @@
-const launches = new Map();
+const launches = require('./launche.mongoose');
 
-let lastFlightNumber = 100;
+
+
 
 
 module.exports = {
     launches,
-    lastFlightNumber
 };

@@ -1,8 +1,8 @@
-let { launches, lastFlightNumber } = require('../../models/launche.model');
+let { launches } = require('../../models/launche.model');
 
-function getAllLaucnches(req, res, next) {
+async function getAllLaucnches(req, res, next) {
     if (req.method == 'GET') {
-        return res.status(200).json(Array.from(launches.values()));
+        return res.status(200).json(await launches.find({}));
     }
     else if (req.method == 'DELETE') {
 
@@ -10,27 +10,51 @@ function getAllLaucnches(req, res, next) {
     next();
 }
 
-function createNewLaunch(req, res) {
+async function createNewLaunch(req, res) {
     let launch = req.body;
-    lastFlightNumber++;
-    launches.set(lastFlightNumber, Object.assign(launch, {
-        flightNumber: lastFlightNumber,
-        customer: ['ZTM', 'NASA'],
-        upcoming: true,
-        success: true,
+    try{
+        let lastFlightNumber;
+
+        let flights = await launches.find({})
+        .sort({flightNumber : -1})
+        .limit(1)
+        if(flights.length){
+            lastFlightNumber = flights[0].flightNumber;
+        }else{
+            lastFlightNumber = 100;
+        }
+
+        console.log(launch)
+
+        await launches.create(Object.assign(launch, {
+            flightNumber : ++lastFlightNumber,
+            customer : ['ZTM', 'NASA'],
+            upcoming : true,
+            success: true
+        }));
+        return res.status(200).json({ message: "New Launch Added" })
+    }catch(err){
+        console.error(err);
+        return res.status(400).send({message : err.message});
     }
-    ));
-    return res.status(200).json({ message: "New Launch Added" })
+
+    
 }
 
-function abortLaunch(req, res) {
+async function abortLaunch(req, res) {
     let flightNumber = req.body.flightNumber;
-    launches.delete(lastFlightNumber)
+    await launches.deleteMany({flightNumber : flightNumber});
     return res.status(200).json({ message: "Launch Aborted!" });
+}
+
+async function deleteAllLaucnches(req, res){
+    await launches.deleteMany({});
+    return res.status(200).send({message : 'Deleted!'});
 }
 
 module.exports = {
     getAllLaucnches,
     abortLaunch,
-    createNewLaunch
+    createNewLaunch,
+    deleteAllLaucnches
 }

@@ -13,7 +13,7 @@ const launchSchema = new mongoose.Schema({
         type : String,
         required : true
     },
-    tocket: {
+    rocket: {
         type : String,
         required : true
     },
@@ -33,3 +33,5 @@ const launchSchema = new mongoose.Schema({
         default : true
     }
 })
+
+module.exports = mongoose.model('Launch', launchSchema);
