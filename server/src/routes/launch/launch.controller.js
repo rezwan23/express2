@@ -1,13 +1,11 @@
 let { launches } = require('../../models/launche.model');
 
-async function getAllLaucnches(req, res, next) {
-    if (req.method == 'GET') {
-        return res.status(200).json(await launches.find({}));
-    }
-    else if (req.method == 'DELETE') {
-
-    }
-    next();
+async function getAllLaucnches(req, res) {
+    let params = req.query;
+    console.log(params);
+    return res.status(200).json(await launches.find({})
+    .skip((Math.abs(params.page) - 1) * Math.abs(params.limit))
+    .limit(Math.abs(params.limit)));
 }
 
 async function createNewLaunch(req, res) {
